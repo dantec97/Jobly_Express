@@ -43,16 +43,31 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  *   { companies: [ { handle, name, description, numEmployees, logoUrl }, ...] }
  *
  * Can filter on provided search filters:
+ * - name
  * - minEmployees
  * - maxEmployees
- * - nameLike (will find case-insensitive, partial matches)
  *
  * Authorization required: none
  */
 
 router.get("/", async function (req, res, next) {
   try {
-    const companies = await Company.findAll();
+    const { name, minEmployees, maxEmployees, ...invalidFilters } = req.query;
+
+    // Reject invalid filtering fields
+    if (Object.keys(invalidFilters).length > 0) {
+      throw new BadRequestError(`Invalid filter fields: ${Object.keys(invalidFilters).join(", ")}`);
+    }
+
+    // Validate that minEmployees is not greater than maxEmployees
+    if (minEmployees !== undefined && maxEmployees !== undefined) {
+      if (parseInt(minEmployees) > parseInt(maxEmployees)) {
+        throw new BadRequestError("minEmployees cannot be greater than maxEmployees");
+      }
+    }
+
+    // Pass valid filters to the model
+    const companies = await Company.findAll({ name, minEmployees, maxEmployees });
     return res.json({ companies });
   } catch (err) {
     return next(err);

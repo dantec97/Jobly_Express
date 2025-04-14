@@ -96,6 +96,24 @@ describe("GET /companies", function () {
     });
   });
 
+  test("works: no filters", async function () {
+    const resp = await request(app).get("/companies");
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.companies.length).toBeGreaterThan(0);
+  });
+
+  test("fails: invalid filter field", async function () {
+    const resp = await request(app).get("/companies?invalidField=true");
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.body.error.message).toEqual("Invalid filter fields: invalidField");
+  });
+
+  test("fails: minEmployees > maxEmployees", async function () {
+    const resp = await request(app).get("/companies?minEmployees=10&maxEmployees=5");
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.body.error.message).toEqual("minEmployees cannot be greater than maxEmployees");
+  });
+
   test("fails: test next() handler", async function () {
     // there's no normal failure event which will cause this route to fail ---
     // thus making it hard to test that the error-handler works with it. This
