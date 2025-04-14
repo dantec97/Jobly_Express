@@ -1,12 +1,18 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const db = require("../db.js");
 const { BCRYPT_WORK_FACTOR } = require("../config");
+const { createToken } = require("../helpers/tokens");
+
+const adminToken = createToken({ username: "u1", isAdmin: true });
+const nonAdminToken = createToken({ username: "u1", isAdmin: false });
+
+console.log("adminToken payload:", jwt.decode(adminToken));
+console.log("nonAdminToken payload:", jwt.decode(nonAdminToken));
 
 async function commonBeforeAll() {
-  // noinspection SqlWithoutWhere
   await db.query("DELETE FROM companies");
-  // noinspection SqlWithoutWhere
   await db.query("DELETE FROM users");
 
   await db.query(`
@@ -16,18 +22,17 @@ async function commonBeforeAll() {
            ('c3', 'C3', 3, 'Desc3', 'http://c3.img')`);
 
   await db.query(`
-        INSERT INTO users(username,
-                          password,
-                          first_name,
-                          last_name,
-                          email)
-        VALUES ('u1', $1, 'U1F', 'U1L', 'u1@email.com'),
-               ('u2', $2, 'U2F', 'U2L', 'u2@email.com')
-        RETURNING username`,
-      [
-        await bcrypt.hash("password1", BCRYPT_WORK_FACTOR),
-        await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
-      ]);
+    INSERT INTO users(username, password, first_name, last_name, email, is_admin)
+    VALUES ('u1', $1, 'U1F', 'U1L', 'u1@email.com', true), -- Admin user
+           ('u2', $2, 'U2F', 'U2L', 'u2@email.com', false) -- Non-admin user
+    RETURNING username`,
+    [
+      await bcrypt.hash("password1", BCRYPT_WORK_FACTOR),
+      await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
+    ]);
+
+  const result = await db.query("SELECT username, is_admin FROM users");
+  console.log("Users in DB:", result.rows);
 }
 
 async function commonBeforeEach() {
@@ -48,4 +53,6 @@ module.exports = {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
+  adminToken,
+  nonAdminToken,
 };

@@ -9,7 +9,7 @@ function createToken(user) {
 
   let payload = {
     username: user.username,
-    isAdmin: user.isAdmin || false,
+    isAdmin: user.isAdmin === undefined ? false : user.isAdmin, // Explicit check for undefined
   };
 
   return jwt.sign(payload, SECRET_KEY);

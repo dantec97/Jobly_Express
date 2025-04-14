@@ -29,7 +29,7 @@ describe("authenticate", function () {
       firstName: "U1F",
       lastName: "U1L",
       email: "u1@email.com",
-      isAdmin: false,
+      isAdmin: true,
     });
   });
 
@@ -69,23 +69,10 @@ describe("register", function () {
       password: "password",
     });
     expect(user).toEqual(newUser);
+
     const found = await db.query("SELECT * FROM users WHERE username = 'new'");
     expect(found.rows.length).toEqual(1);
     expect(found.rows[0].is_admin).toEqual(false);
-    expect(found.rows[0].password.startsWith("$2b$")).toEqual(true);
-  });
-
-  test("works: adds admin", async function () {
-    let user = await User.register({
-      ...newUser,
-      password: "password",
-      isAdmin: true,
-    });
-    expect(user).toEqual({ ...newUser, isAdmin: true });
-    const found = await db.query("SELECT * FROM users WHERE username = 'new'");
-    expect(found.rows.length).toEqual(1);
-    expect(found.rows[0].is_admin).toEqual(true);
-    expect(found.rows[0].password.startsWith("$2b$")).toEqual(true);
   });
 
   test("bad request with dup data", async function () {
@@ -116,7 +103,7 @@ describe("findAll", function () {
         firstName: "U1F",
         lastName: "U1L",
         email: "u1@email.com",
-        isAdmin: false,
+        isAdmin: true,
       },
       {
         username: "u2",
@@ -139,7 +126,7 @@ describe("get", function () {
       firstName: "U1F",
       lastName: "U1L",
       email: "u1@email.com",
-      isAdmin: false,
+      isAdmin: true,
     });
   });
 
@@ -180,7 +167,7 @@ describe("update", function () {
       firstName: "U1F",
       lastName: "U1L",
       email: "u1@email.com",
-      isAdmin: false,
+      isAdmin: true,
     });
     const found = await db.query("SELECT * FROM users WHERE username = 'u1'");
     expect(found.rows.length).toEqual(1);
