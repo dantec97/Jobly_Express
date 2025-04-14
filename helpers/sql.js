@@ -1,8 +1,14 @@
 const { BadRequestError } = require("../expressError");
 
-// THIS NEEDS SOME GREAT DOCUMENTATION.
+  /** Dynamically create SQL query string for partial updates.
+   *
+   * It is designed to handle partial updates, where only the fields provided in `dataToUpdate`
+   * are updated, and it uses parameterized queries to prevent SQL injection.
+   * 
+   **/
 
 function sqlForPartialUpdate(dataToUpdate, jsToSql) {
+  
   const keys = Object.keys(dataToUpdate);
   if (keys.length === 0) throw new BadRequestError("No data");
 
