@@ -10,7 +10,6 @@ const {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  u1Token, // Admin token
   u2Token, // Non-admin token
 } = require("./_testCommon");
 const { adminToken } = require("../models/_testCommon");

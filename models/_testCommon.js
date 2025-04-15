@@ -6,7 +6,9 @@ const { BCRYPT_WORK_FACTOR } = require("../config");
 const { createToken } = require("../helpers/tokens");
 
 const adminToken = createToken({ username: "u1", isAdmin: true });
-const nonAdminToken = createToken({ username: "u1", isAdmin: false });
+const nonAdminToken = createToken({ username: "u2", isAdmin: false });
+
+const freshAdminToken = createToken({ username: "u1", isAdmin: true });
 
 console.log("adminToken payload:", jwt.decode(adminToken));
 console.log("nonAdminToken payload:", jwt.decode(nonAdminToken));
@@ -55,4 +57,5 @@ module.exports = {
   commonAfterAll,
   adminToken,
   nonAdminToken,
+  freshAdminToken
 };
