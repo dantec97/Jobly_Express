@@ -140,9 +140,52 @@ describe("GET /companies/:handle", function () {
       company: {
         handle: "c1",
         name: "C1",
+        jobs: [],
         description: "Desc1",
         numEmployees: 1,
         logoUrl: "http://c1.img",
+      },
+    });
+  });
+
+  test("works for a company with jobs", async function () {
+    const resp = await request(app).get(`/companies/c1`);
+    console.log("Response body in test:", resp.body);
+    expect(resp.body).toEqual({
+      company: {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+        jobs: [
+          {
+            id: expect.any(Number),
+            title: "Job1",
+            salary: 50000,
+            equity: "0.01",
+          },
+          {
+            id: expect.any(Number),
+            title: "Job2",
+            salary: 60000,
+            equity: "0",
+          },
+        ],
+      },
+    });
+  });
+
+  test("works for a company with no jobs", async function () {
+    const resp = await request(app).get(`/companies/c3`);
+    expect(resp.body).toEqual({
+      company: {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+        jobs: [],
       },
     });
   });

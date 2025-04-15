@@ -39,10 +39,10 @@ async function commonBeforeAll() {
       await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
     ]);
 
-    await db.query(`
-      INSERT INTO jobs (title, salary, equity, company_handle)
-      VALUES ('Job1', 50000, '0.01', 'c1'),
-             ('Job2', 60000, '0', 'c2')`);
+  await db.query(`
+    INSERT INTO jobs (title, salary, equity, company_handle)
+    VALUES ('Job1', 50000, '0.01', 'c1'),
+           ('Job2', 60000, '0', 'c1')`);
   
   const result = await db.query("SELECT username, is_admin FROM users");
   console.log("Users in DB:", result.rows);

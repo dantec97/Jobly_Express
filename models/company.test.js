@@ -8,7 +8,7 @@ const {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-} = require("./_testCommon");
+} = require("../models/_testCommon");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -162,10 +162,6 @@ test("works: filter by name and minEmployees", async function () {
   ]);
 });
 
-
-
-
-
 /************************************** get */
 
 describe("get", function () {
@@ -177,6 +173,20 @@ describe("get", function () {
       description: "Desc1",
       numEmployees: 1,
       logoUrl: "http://c1.img",
+      jobs: [
+        {
+          id: expect.any(Number),
+          title: "Job1",
+          salary: 50000,
+          equity: "0.01",
+        },
+        {
+          id: expect.any(Number),
+          title: "Job2",
+          salary: 60000,
+          equity: "0",
+        },
+      ],
     });
   });
 

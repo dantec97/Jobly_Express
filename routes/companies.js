@@ -84,11 +84,13 @@ router.get("/", async function (req, res, next) {
 router.get("/:handle", async function (req, res, next) {
   try {
     const company = await Company.get(req.params.handle);
+    console.log("Response being sen via route:", { company }); // Log the response
     return res.json({ company });
   } catch (err) {
     return next(err);
   }
 });
+
 
 /** PATCH /[handle] { fld1, fld2, ... } => { company }
  *

@@ -93,25 +93,41 @@ class Company {
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }
-   *   where jobs is [{ id, title, salary, equity, companyHandle }, ...]
+   *   where jobs is [{ id, title, salary, equity }, ...]
    *
    * Throws NotFoundError if not found.
    **/
 
+  /** Given a company handle, return data about company + its jobs */
   static async get(handle) {
+    // First query looks correct for company info
     const companyRes = await db.query(
-          `SELECT handle,
-                  name,
-                  description,
-                  num_employees AS "numEmployees",
-                  logo_url AS "logoUrl"
-           FROM companies
-           WHERE handle = $1`,
-        [handle]);
+      `SELECT handle,
+              name,
+              description,
+              num_employees AS "numEmployees",
+              logo_url AS "logoUrl"
+       FROM companies
+       WHERE handle = $1`,
+      [handle]
+    );
 
     const company = companyRes.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
+
+    // This query needs to be modified to explicitly match company_handle
+    const jobsRes = await db.query(
+      `SELECT id, title, salary, equity
+       FROM jobs
+       WHERE company_handle = $1`,  // Remove LOWER() as it might be causing issues
+      [handle]
+    );
+
+    company.jobs = jobsRes.rows;
+console.log("company being returned", company);
+    console.log("Fetching jobs for company handle:", handle);
+    console.log("Jobs fetched:", jobsRes.rows);
 
     return company;
   }
