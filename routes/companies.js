@@ -8,6 +8,7 @@ const express = require("express");
 const { BadRequestError } = require("../expressError");
 const { ensureAdmin } = require("../middleware/auth");
 const Company = require("../models/company");
+const Job = require("../models/job"); // Import the Job model
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
@@ -83,14 +84,31 @@ router.get("/", async function (req, res, next) {
 
 router.get("/:handle", async function (req, res, next) {
   try {
+    // Fetch the company data
     const company = await Company.get(req.params.handle);
-    console.log("Response being sen via route:", { company }); // Log the response
+
+    // Fetch the jobs associated with the company
+    const jobs = await Job.findAll({ companyHandle: req.params.handle });
+
+    // Combine the company data with the jobs
+    company.jobs = jobs.map(job => ({
+      id: job.id,
+      title: job.title,
+      salary: job.salary,
+      equity: job.equity,
+    }));
+
+    // Log the company and jobs for confirmation
+    console.log("Company dataaaaa:", company);
+    console.log("Jobs dataaaaa:", company.jobs);
+    console.log("Company handle:", req.params.handle);
+    console.log("Company jobbbb:", Job);
+
     return res.json({ company });
   } catch (err) {
     return next(err);
   }
 });
-
 
 /** PATCH /[handle] { fld1, fld2, ... } => { company }
  *

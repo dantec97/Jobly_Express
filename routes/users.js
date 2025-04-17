@@ -119,4 +119,20 @@ router.delete("/:username", ensureLoggedIn, ensureCorrectUserOrAdmin, async func
 });
 
 
+/** POST /[username]/jobs/[id] => { applied: jobId }
+ *
+ * Allows a user to apply for a job.
+ * Authorization required: logged in as that user or admin.
+ */
+router.post("/:username/jobs/:id", ensureLoggedIn, ensureCorrectUserOrAdmin, async function (req, res, next) {
+  try {
+    const { username, id } = req.params;
+    await User.applyForJob(username, id);
+    return res.json({ applied: +id });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
 module.exports = router;

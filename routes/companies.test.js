@@ -4,7 +4,7 @@ const request = require("supertest");
 
 const db = require("../db");
 const app = require("../app");
-
+jest.setTimeout(10000); // Set timeout to 1 second
 const {
   commonBeforeAll,
   commonBeforeEach,
@@ -85,7 +85,9 @@ describe("POST /companies", function () {
 describe("GET /companies", function () {
   test("ok for anon", async function () {
     const resp = await request(app).get("/companies");
+    console.log("**********Response bodyyy:***********", resp.body);
     expect(resp.body).toEqual({
+      //create job in this test 
       companies: [
         {
           handle: "c1",
@@ -134,23 +136,24 @@ describe("GET /companies", function () {
 /************************************** GET /companies/:handle */
 
 describe("GET /companies/:handle", function () {
-  test("works for anon", async function () {
-    const resp = await request(app).get(`/companies/c1`);
-    expect(resp.body).toEqual({
-      company: {
-        handle: "c1",
-        name: "C1",
-        jobs: [],
-        description: "Desc1",
-        numEmployees: 1,
-        logoUrl: "http://c1.img",
-      },
-    });
-  });
-
   test("works for a company with jobs", async function () {
+    // Manually insert jobs for the company
+    await db.query(`
+      INSERT INTO jobs (title, salary, equity, company_handle)
+      VALUES 
+        ('Job1', 50000, '0.01', 'c1'),
+        ('Job2', 60000, '0', 'c1')
+    `);
+
+    // Query the database to confirm the jobs were inserted
+    const jobs = await db.query("SELECT id, title, salary, equity, company_handle FROM jobs WHERE company_handle = 'c1'");
+    console.log("Jobs in DB for company 'c1':", jobs.rows);
+
+    // Make the GET request to fetch the company with jobs
     const resp = await request(app).get(`/companies/c1`);
-    console.log("Response body in test:", resp.body);
+    console.log("Response body:", resp.body);
+
+    // Assert the response includes the jobs
     expect(resp.body).toEqual({
       company: {
         handle: "c1",
@@ -195,6 +198,99 @@ describe("GET /companies/:handle", function () {
     expect(resp.statusCode).toEqual(404);
   });
 });
+
+  // test("works for a company with jobs", async function () {
+  //   //this test is failing idk why, but i can confirm it works manually with insomnia???
+  //   const resp = await request(app).get(`/companies`);
+  //   console.log("########Response body in test:", resp.body);
+
+  //   expect(resp.body).toEqual({
+  //     company: {
+  //       handle: "c1",
+  //       name: "C1",
+  //       description: "Desc1",
+  //       numEmployees: 1,
+  //       logoUrl: "http://c1.img",
+  //       jobs: [
+  //         {
+  //           id: expect.any(Number),
+  //           title: "Job1",
+  //           salary: 50000,
+  //           equity: "0.01",
+  //         },
+  //         {
+  //           id: expect.any(Number),
+  //           title: "Job2",
+  //           salary: 60000,
+  //           equity: "0",
+  //         },
+  //       ],
+  //     },
+  //   });
+  // });
+
+  test("works for a company with jobs", async function () {
+    // Manually insert jobs for the company
+    await db.query(`
+      INSERT INTO jobs (title, salary, equity, company_handle)
+      VALUES 
+        ('Job1', 50000, '0.01', 'c1'),
+        ('Job2', 60000, '0', 'c1')
+    `);
+  
+    // Query the database to confirm the jobs were inserted
+    const jobs = await db.query("SELECT id, title, salary, equity, company_handle FROM jobs WHERE company_handle = 'c1'");
+    console.log("Jobs in DB for company 'c1':", jobs.rows);
+  
+    // Make the GET request to fetch the company with jobs
+    const resp = await request(app).get(`/companies/c1`);
+    console.log("Response body:", resp.body);
+  
+    // Assert the response includes the jobs
+    expect(resp.body).toEqual({
+      company: {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+        jobs: [
+          {
+            id: expect.any(Number),
+            title: "Job1",
+            salary: 50000,
+            equity: "0.01",
+          },
+          {
+            id: expect.any(Number),
+            title: "Job2",
+            salary: 60000,
+            equity: "0",
+          },
+        ],
+      },
+    });
+  });
+
+  test("works for a company with no jobs", async function () {
+    const resp = await request(app).get(`/companies/c3`);
+    expect(resp.body).toEqual({
+      company: {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+        jobs: [],
+      },
+    });
+  });
+
+  test("not found for no such company", async function () {
+    const resp = await request(app).get(`/companies/nope`);
+    expect(resp.statusCode).toEqual(404);
+  });
+
 
 /************************************** PATCH /companies/:handle */
 
