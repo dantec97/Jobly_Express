@@ -10,9 +10,6 @@ const adminToken = createToken({ username: "u1", isAdmin: true });
 const nonAdminToken = createToken({ username: "u2", isAdmin: false });
 const freshAdminToken = createToken({ username: "u1", isAdmin: true });
 
-console.log("Admin token payload:", jwt.decode(adminToken));
-console.log("Non-admin token payload:", jwt.decode(nonAdminToken));
-console.log("USE THIS ADMIN TOKEN:", adminToken);
 
 let jobId1;
 let jobId2;
@@ -61,26 +58,21 @@ async function commonBeforeAll() {
   const jobs = await db.query("SELECT * FROM jobs");
   const users = await db.query("SELECT username, is_admin FROM users");
 
-  console.log("Companies in DB after setup:", companies.rows);
-  console.log("Jobs in DB after setup:", jobs.rows);
-  console.log("Users in DB:", users.rows);
 
   // Store job IDs for tests
   const jobResults = await db.query("SELECT id FROM jobs");
   jobId1 = jobResults.rows[0]?.id;
   jobId2 = jobResults.rows[1]?.id;
-
-  console.log("Job IDs:", jobId1, jobId2);
 }
 
 
 async function commonBeforeEach() {
-  console.log("Starting DB transaction");
+
   await db.query("BEGIN");
 }
 
 async function commonAfterEach() {
-  console.log("Rolling back DB transaction");
+
   await db.query("ROLLBACK");
 }
 

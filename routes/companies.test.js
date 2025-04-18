@@ -85,7 +85,6 @@ describe("POST /companies", function () {
 describe("GET /companies", function () {
   test("ok for anon", async function () {
     const resp = await request(app).get("/companies");
-    console.log("**********Response bodyyy:***********", resp.body);
     expect(resp.body).toEqual({
       //create job in this test 
       companies: [
@@ -147,11 +146,10 @@ describe("GET /companies/:handle", function () {
 
     // Query the database to confirm the jobs were inserted
     const jobs = await db.query("SELECT id, title, salary, equity, company_handle FROM jobs WHERE company_handle = 'c1'");
-    console.log("Jobs in DB for company 'c1':", jobs.rows);
+
 
     // Make the GET request to fetch the company with jobs
     const resp = await request(app).get(`/companies/c1`);
-    console.log("Response body:", resp.body);
 
     // Assert the response includes the jobs
     expect(resp.body).toEqual({
@@ -199,35 +197,7 @@ describe("GET /companies/:handle", function () {
   });
 });
 
-  // test("works for a company with jobs", async function () {
-  //   //this test is failing idk why, but i can confirm it works manually with insomnia???
-  //   const resp = await request(app).get(`/companies`);
-  //   console.log("########Response body in test:", resp.body);
 
-  //   expect(resp.body).toEqual({
-  //     company: {
-  //       handle: "c1",
-  //       name: "C1",
-  //       description: "Desc1",
-  //       numEmployees: 1,
-  //       logoUrl: "http://c1.img",
-  //       jobs: [
-  //         {
-  //           id: expect.any(Number),
-  //           title: "Job1",
-  //           salary: 50000,
-  //           equity: "0.01",
-  //         },
-  //         {
-  //           id: expect.any(Number),
-  //           title: "Job2",
-  //           salary: 60000,
-  //           equity: "0",
-  //         },
-  //       ],
-  //     },
-  //   });
-  // });
 
   test("works for a company with jobs", async function () {
     // Manually insert jobs for the company
@@ -240,11 +210,9 @@ describe("GET /companies/:handle", function () {
   
     // Query the database to confirm the jobs were inserted
     const jobs = await db.query("SELECT id, title, salary, equity, company_handle FROM jobs WHERE company_handle = 'c1'");
-    console.log("Jobs in DB for company 'c1':", jobs.rows);
   
     // Make the GET request to fetch the company with jobs
     const resp = await request(app).get(`/companies/c1`);
-    console.log("Response body:", resp.body);
   
     // Assert the response includes the jobs
     expect(resp.body).toEqual({

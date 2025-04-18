@@ -125,13 +125,6 @@ class Company {
     );
 
     company.jobs = jobsRes.rows;
-console.log("company being returned", company);
-    // console.log("Fetching jobs for company handle:", handle);
-    // console.log("Jobs fetchedxxx using company.jobs:", company.jobs);
-    // console.log("Jobs fetched using jobsRes.rowsxxx:", jobsRes.rows);
-    console.log(`[${new Date().toISOString()}] Fetching jobs for company handle:`, handle);
-    console.log(`[${new Date().toISOString()}] Database returned:`, jobsRes.rows);
-
     return company;
   }
 

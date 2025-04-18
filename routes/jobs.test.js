@@ -22,7 +22,6 @@ afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
 /************************************** POST /jobs */
-console.log("Admininininini token:", adminToken);
 describe("POST /jobs", function () {
   const newJob = {
     title: "New Job",
@@ -36,7 +35,6 @@ describe("POST /jobs", function () {
       .post("/jobs")
       .send(newJob)
       .set("authorization", `Bearer ${adminToken}`);
-      console.log(`coming from the post/job route, should be admin: ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       job: {

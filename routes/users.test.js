@@ -143,7 +143,6 @@ describe("POST /users/:username/jobs/:id", function () {
 
     // Log the jobs to confirm they were inserted
     const jobs = await db.query("SELECT id, title FROM jobs");
-    console.log("Jobs in DB:", jobs.rows);
   });
 
   test("works for admin", async function () {
@@ -273,7 +272,6 @@ describe("GET /users/:username", function () {
   
     jobId1 = jobRes.rows[0].id; // Use this in your test
     jobId2 = jobRes.rows[1].id; // Use this in your test
-    console.log("Jobs in DB:", jobRes.rows);
   });
   
   test("works for admin: user with applications", async function () {

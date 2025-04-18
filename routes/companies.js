@@ -97,13 +97,7 @@ router.get("/:handle", async function (req, res, next) {
       salary: job.salary,
       equity: job.equity,
     }));
-
-    // Log the company and jobs for confirmation
-    console.log("Company dataaaaa:", company);
-    console.log("Jobs dataaaaa:", company.jobs);
-    console.log("Company handle:", req.params.handle);
-    console.log("Company jobbbb:", Job);
-
+    // Return the combined data
     return res.json({ company });
   } catch (err) {
     return next(err);
